@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Me quieres?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #050505;
+        }
+
+        /* --- SCREEN 1: DARK / LYCORIS RADIATA SCREEN --- */
+        #screen1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a0508 0%, #050505 80%);
+            transition: opacity 0.8s ease-in-out;
+            z-index: 10;
+        }
+
+        /* Lycoris Radiata Side Decorations (SVG Graphic Elements) */
+        .lycoris-side {
+            position: absolute;
+            bottom: 0;
+            width: 320px;
+            height: 480px;
+            pointer-events: none;
+            opacity: 0.85;
+            filter: drop-shadow(0 0 15px rgba(220, 20, 60, 0.6));
+        }
+
+        .lycoris-left {
+            left: 0;
+        }
+
+        .lycoris-right {
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        /* Envelope and Letter Styles */
+        .card-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #7a0c1e;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(220, 20, 60, 0.3);
+            transition: transform 0.5s ease;
+        }
+
+        /* Envelope Flap */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #9e1027;
+            transform-origin: top;
+            transition: transform 0.6s ease 0.2s, z-index 0.2s 0.4s;
+            z-index: 4;
+        }
+
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #5e0816;
+            border-right: 150px solid #5e0816;
+            border-bottom: 100px solid #6b0a1a;
+            border-top: 100px solid transparent;
+            border-radius: 0 0 8px 8px;
+            z-index: 3;
+        }
+
+        /* The Letter Inside */
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 270px;
+            height: 180px;
+            background: #fffaf0;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27) 0.6s, z-index 0.1s 0.6s;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .letter h2 {
+            color: #8b0000;
+            font-size: 26px;
+            margin-bottom: 25px;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 45px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-yes {
+            background-color: #ff3366;
+            color: white;
+        }
+
+        .btn-yes:hover {
+            background-color: #e60039;
+            transform: scale(1.1);
+        }
+
+        .btn-no {
+            background-color: #4a4a4a;
+            color: white;
+            position: absolute;
+            right: 30px;
+            transition: top 0.15s ease, left 0.15s ease;
+        }
+
+        /* Open Envelope Animation State */
+        .card-container.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .card-container.open .letter {
+            transform: translateY(-130px);
+            height: 220px;
+            z-index: 5;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: -40px;
+            width: 100%;
+            text-align: center;
+            color: #ff4d6d;
+            font-size: 14px;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-5px); }
+        }
+
+        /* --- SCREEN 2: LOVE RAIN SCREEN --- */
+        #screen2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out;
+            z-index: 20;
+            overflow: hidden;
+        }
+
+        #screen2.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .love-text {
+            font-size: 80px;
+            font-weight: 900;
+            color: #ff2a6d;
+            text-shadow: 0 10px 25px rgba(255, 42, 109, 0.3), 0 0 50px rgba(255, 182, 193, 0.8);
+            z-index: 30;
+            font-family: 'Arial Rounded MT Bold', 'Comic Sans MS', sans-serif;
+            animation: bounce 1s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        /* Heart Rain Animation */
+        .heart {
+            position: absolute;
+            top: -50px;
+            color: #ff69b4;
+            user-select: none;
+            pointer-events: none;
+            z-index: 25;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0.2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN 1 -->
+    <div id="screen1">
+        <!-- SVG Visuals for Lycoris Radiata on Left & Right -->
+        <svg class="lycoris-side lycoris-left" viewBox="0 0 200 300">
+            <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
+            <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
+            <path d="M 30 300 Q 100 220 140 120" stroke="#1c3d14" stroke-width="3" fill="none"/>
+            <!-- Flower Blooms -->
+            <g transform="translate(40,100)">
+                <path d="M0,0 Q-30,-40 -60,-20 Q-20,0 0,0" fill="#dc143c"/>
+                <path d="M0,0 Q30,-50 60,-30 Q20,5 0,0" fill="#ff1744"/>
+                <path d="M0,0 Q-10,-60 -20,-80 Q0,-30 0,0" fill="#b71c1c"/>
+                <path d="M0,0 Q10,-60 40,-70 Q10,-20 0,0" fill="#d50000"/>
+                <!-- Long Curved Stamens -->
+                <path d="M0,0 Q-40,-70 -80,-60" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="-80" cy="-60" r="2" fill="#ff4d6d"/>
+                <path d="M0,0 Q-20,-90 -40,-100" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="-40" cy="-100" r="2" fill="#ff4d6d"/>
+                <path d="M0,0 Q20,-90 50,-95" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="50" cy="-95" r="2" fill="#ff4d6d"/>
+                <path d="M0,0 Q50,-70 80,-50" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="80" cy="-50" r="2" fill="#ff4d6d"/>
+            </g>
+            <g transform="translate(90,80) scale(0.8)">
+                <path d="M0,0 Q-30,-40 -60,-20 Q-20,0 0,0" fill="#dc143c"/>
+                <path d="M0,0 Q30,-50 60,-30 Q20,5 0,0" fill="#ff1744"/>
+                <path d="M0,0 Q-10,-60 -20,-80 Q0,-30 0,0" fill="#b71c1c"/>
+                <path d="M0,0 Q-40,-70 -80,-60" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <path d="M0,0 Q20,-90 50,-95" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+            </g>
+        </svg>
+
+        <svg class="lycoris-side lycoris-right" viewBox="0 0 200 300">
+            <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
+            <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
+            <path d="M 30 300 Q 100 220 140 120" stroke="#1c3d14" stroke-width="3" fill="none"/>
+            <g transform="translate(40,100)">
+                <path d="M0,0 Q-30,-40 -60,-20 Q-20,0 0,0" fill="#dc143c"/>
+                <path d="M0,0 Q30,-50 60,-30 Q20,5 0,0" fill="#ff1744"/>
+                <path d="M0,0 Q-10,-60 -20,-80 Q0,-30 0,0" fill="#b71c1c"/>
+                <path d="M0,0 Q10,-60 40,-70 Q10,-20 0,0" fill="#d50000"/>
+                <path d="M0,0 Q-40,-70 -80,-60" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="-80" cy="-60" r="2" fill="#ff4d6d"/>
+                <path d="M0,0 Q-20,-90 -40,-100" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="-40" cy="-100" r="2" fill="#ff4d6d"/>
+                <path d="M0,0 Q20,-90 50,-95" stroke="#ff4d6d" stroke-width="1.5" fill="none"/>
+                <circle cx="50" cy="-95" r="2" fill="#ff4d6d"/>
+            </g>
+        </svg>
+
+        <!-- Envelope Structure -->
+        <div class="card-container" id="cardContainer" onclick="openEnvelope()">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="letter">
+                    <h2>¿Me quieres?</h2>
+                    <div class="buttons-container">
+                        <button class="btn btn-yes" onclick="sayYes(event)">SÍ</button>
+                        <button class="btn btn-no" id="btnNo">NO</button>
+                    </div>
+                </div>
+            </div>
+            <div class="click-hint" id="clickHint">Haz clic para abrir el sobre</div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2 -->
+    <div id="screen2">
+        <h1 class="love-text">YO MÁS</h1>
+    </div>
+
+    <script>
+        let isOpen = false;
+
+        function openEnvelope() {
+            if (!isOpen) {
+                document.getElementById('cardContainer').classList.add('open');
+                document.getElementById('clickHint').style.display = 'none';
+                isOpen = true;
+            }
+        }
+
+        // Evade "NO" Button logic across whole screen
+        const btnNo = document.getElementById('btnNo');
+
+        function moveNoButton() {
+            // Get screen bounds
+            const padding = 50;
+            const maxX = window.innerWidth - btnNo.offsetWidth - padding;
+            const maxY = window.innerHeight - btnNo.offsetHeight - padding;
+
+            // Generate random positions
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+            // Move button to body absolute level when hovered/focused
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+            btnNo.style.zIndex = '999';
+        }
+
+        btnNo.addEventListener('mouseenter', moveNoButton);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        // "YES" Click Transition to Screen 2
+        function sayYes(event) {
+            event.stopPropagation(); // Prevents triggering container click
+            
+            const screen1 = document.getElementById('screen1');
+            const screen2 = document.getElementById('screen2');
+
+            screen1.style.opacity = '0';
+            setTimeout(() => {
+                screen1.style.display = 'none';
+                screen2.classList.add('active');
+                startHeartRain();
+            }, 800);
+        }
+
+        // Heart Rain Effect
+        function startHeartRain() {
+            const screen2 = document.getElementById('screen2');
+            const hearts = ['♥', '💖', '💗', '💕', '🌸', '✨'];
+
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                
+                // Random attributes for organic rain feel
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2s - 5s
+                heart.style.fontSize = (Math.random() * 25 + 15) + 'px';
+                heart.style.color = ['#ff2a6d', '#ff69b4', '#ff8da1', '#ff1493'][Math.floor(Math.random() * 4)];
+
+                screen2.appendChild(heart);
+
+                // Remove heart after animation ends
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
