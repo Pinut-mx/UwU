@@ -19,7 +19,7 @@
             background-color: #050505;
         }
 
-        /* --- PANTALLA 1: FONDO NEGRO CON LYCORIS RADIATA --- */
+        /* --- PANTALLA 1: SOBRE Y FLORES --- */
         #screen1 {
             position: absolute;
             top: 0;
@@ -34,7 +34,6 @@
             z-index: 10;
         }
 
-        /* Flores Lycoris Radiata */
         .lycoris-side {
             position: absolute;
             bottom: 0;
@@ -48,7 +47,6 @@
         .lycoris-left { left: 0; }
         .lycoris-right { right: 0; transform: scaleX(-1); }
 
-        /* Estilos del Sobre y Carta */
         .card-container {
             position: relative;
             width: 320px;
@@ -116,26 +114,29 @@
         .letter h2 {
             color: #8b0000;
             font-size: 26px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-family: 'Georgia', serif;
         }
 
+        /* FILA ÚNICA PARA BOTONES */
         .buttons-container {
-            display: flex;
-            gap: 25px; /* Separación moderada y natural entre los dos botones */
-            justify-content: center;
-            align-items: center;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 20px !important;
             width: 100%;
         }
 
         .btn {
-            padding: 10px 24px;
-            font-size: 16px;
+            padding: 10px 22px;
+            font-size: 15px;
             font-weight: bold;
             border: none;
             border-radius: 20px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            display: inline-block;
         }
 
         .btn-yes {
@@ -152,11 +153,12 @@
         .btn-no {
             background-color: #4a4a4a;
             color: white;
-            transition: left 0.35s ease-out, top 0.35s ease-out;
+            position: relative; /* Inicia alineado al lado del SÍ */
+            transition: left 0.3s ease-out, top 0.3s ease-out;
             z-index: 999;
         }
 
-        /* Animación de apertura del sobre */
+        /* ANIMACIÓN AL ABRIR */
         .card-container.open .flap {
             transform: rotateX(180deg);
             z-index: 1;
@@ -238,7 +240,7 @@
 <body>
 
     <div id="screen1">
-        <!-- SVG Lycoris Radiata Izquierda -->
+        <!-- SVG Flores Izquierda -->
         <svg class="lycoris-side lycoris-left" viewBox="0 0 200 300">
             <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
             <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
@@ -255,7 +257,7 @@
             </g>
         </svg>
 
-        <!-- SVG Lycoris Radiata Derecha -->
+        <!-- SVG Flores Derecha -->
         <svg class="lycoris-side lycoris-right" viewBox="0 0 200 300">
             <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
             <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
@@ -270,7 +272,7 @@
             </g>
         </svg>
 
-        <!-- Sobre -->
+        <!-- SOBRE Y CARTA -->
         <div class="card-container" id="cardContainer" onclick="openEnvelope()">
             <div class="envelope">
                 <div class="flap"></div>
@@ -305,11 +307,10 @@
             }
         }
 
-        // Esquivar sin salir de la pantalla
         function moveNoButton() {
             if (!isOpen) return;
 
-            // Al intentar tocarlo por 1ª vez, se independiza de la carta
+            // En el primer intento de tocarlo, pasa a fixed para escapar libremente
             if (!isMoving) {
                 const rect = btnNo.getBoundingClientRect();
                 btnNo.style.position = 'fixed';
@@ -318,10 +319,11 @@
                 isMoving = true;
             }
 
-            const padding = 30; // Margen de seguridad para no salirse de la pantalla
+            const padding = 20; 
             const btnWidth = btnNo.offsetWidth;
             const btnHeight = btnNo.offsetHeight;
 
+            // Limites estrictos para no salirse de la pantalla
             const maxX = window.innerWidth - btnWidth - padding;
             const maxY = window.innerHeight - btnHeight - padding;
 
