@@ -19,7 +19,7 @@
             background-color: #050505;
         }
 
-        /* --- PANTALLA 1: FONDO NEGRO DIFUMINADO CON LYCORIS RADIATA --- */
+        /* --- PANTALLA 1: FONDO NEGRO CON LYCORIS RADIATA --- */
         #screen1 {
             position: absolute;
             top: 0;
@@ -34,11 +34,12 @@
             z-index: 10;
         }
 
+        /* Flores Lycoris Radiata */
         .lycoris-side {
             position: absolute;
             bottom: 0;
-            width: 320px;
-            height: 480px;
+            width: 300px;
+            height: 450px;
             pointer-events: none;
             opacity: 0.85;
             filter: drop-shadow(0 0 15px rgba(220, 20, 60, 0.6));
@@ -63,7 +64,6 @@
             background-color: #7a0c1e;
             border-radius: 8px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(220, 20, 60, 0.3);
-            transition: transform 0.5s ease;
         }
 
         .flap {
@@ -115,28 +115,27 @@
 
         .letter h2 {
             color: #8b0000;
-            font-size: 28px;
-            margin-bottom: 35px;
+            font-size: 26px;
+            margin-bottom: 25px;
             font-family: 'Georgia', serif;
         }
 
         .buttons-container {
             display: flex;
-            gap: 50px;
+            gap: 25px; /* Separación moderada y natural entre los dos botones */
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 50px;
         }
 
         .btn {
-            padding: 12px 28px;
-            font-size: 18px;
+            padding: 10px 24px;
+            font-size: 16px;
             font-weight: bold;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
         }
 
         .btn-yes {
@@ -147,18 +146,17 @@
 
         .btn-yes:hover {
             background-color: #e60039;
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
 
         .btn-no {
             background-color: #4a4a4a;
             color: white;
-            position: fixed;
-            transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 9999;
+            transition: left 0.35s ease-out, top 0.35s ease-out;
+            z-index: 999;
         }
 
-        /* Animación de apertura */
+        /* Animación de apertura del sobre */
         .card-container.open .flap {
             transform: rotateX(180deg);
             z-index: 1;
@@ -166,7 +164,7 @@
 
         .card-container.open .letter {
             transform: translateY(-140px);
-            height: 230px;
+            height: 220px;
             z-index: 5;
         }
 
@@ -185,7 +183,7 @@
             50% { opacity: 1; transform: translateY(-5px); }
         }
 
-        /* --- PANTALLA 2 --- */
+        /* --- PANTALLA 2: LLUVIAS DE CORAZONES --- */
         #screen2 {
             position: absolute;
             top: 0;
@@ -240,6 +238,7 @@
 <body>
 
     <div id="screen1">
+        <!-- SVG Lycoris Radiata Izquierda -->
         <svg class="lycoris-side lycoris-left" viewBox="0 0 200 300">
             <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
             <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
@@ -256,6 +255,7 @@
             </g>
         </svg>
 
+        <!-- SVG Lycoris Radiata Derecha -->
         <svg class="lycoris-side lycoris-right" viewBox="0 0 200 300">
             <path d="M 20 300 Q 60 200 40 100" stroke="#1c3d14" stroke-width="4" fill="none"/>
             <path d="M 10 300 Q 80 180 90 80" stroke="#1c3d14" stroke-width="3" fill="none"/>
@@ -270,13 +270,14 @@
             </g>
         </svg>
 
+        <!-- Sobre -->
         <div class="card-container" id="cardContainer" onclick="openEnvelope()">
             <div class="envelope">
                 <div class="flap"></div>
                 <div class="pocket"></div>
                 <div class="letter">
                     <h2>¿Me quieres?</h2>
-                    <div class="buttons-container" id="btnContainer">
+                    <div class="buttons-container">
                         <button class="btn btn-yes" onclick="sayYes(event)">SÍ</button>
                         <button class="btn btn-no" id="btnNo">NO</button>
                     </div>
@@ -286,39 +287,46 @@
         </div>
     </div>
 
+    <!-- PANTALLA 2 -->
     <div id="screen2">
         <h1 class="love-text">YO MÁS</h1>
     </div>
 
     <script>
         let isOpen = false;
+        let isMoving = false;
         const btnNo = document.getElementById('btnNo');
-
-        function placeInitialNoButton() {
-            const container = document.getElementById('btnContainer');
-            const rect = container.getBoundingClientRect();
-            btnNo.style.left = (rect.left + rect.width / 2 + 25) + 'px';
-            btnNo.style.top = (rect.top + 5) + 'px';
-        }
 
         function openEnvelope() {
             if (!isOpen) {
                 document.getElementById('cardContainer').classList.add('open');
                 document.getElementById('clickHint').style.display = 'none';
                 isOpen = true;
-                setTimeout(placeInitialNoButton, 800);
             }
         }
 
+        // Esquivar sin salir de la pantalla
         function moveNoButton() {
             if (!isOpen) return;
 
-            const margin = 60;
-            const maxX = window.innerWidth - btnNo.offsetWidth - margin;
-            const maxY = window.innerHeight - btnNo.offsetHeight - margin;
+            // Al intentar tocarlo por 1ª vez, se independiza de la carta
+            if (!isMoving) {
+                const rect = btnNo.getBoundingClientRect();
+                btnNo.style.position = 'fixed';
+                btnNo.style.left = rect.left + 'px';
+                btnNo.style.top = rect.top + 'px';
+                isMoving = true;
+            }
 
-            const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
+            const padding = 30; // Margen de seguridad para no salirse de la pantalla
+            const btnWidth = btnNo.offsetWidth;
+            const btnHeight = btnNo.offsetHeight;
+
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
             btnNo.style.left = `${randomX}px`;
             btnNo.style.top = `${randomY}px`;
