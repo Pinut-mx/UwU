@@ -19,7 +19,7 @@
             background-color: #050505;
         }
 
-        /* --- PANTALLA 1: SOBRE Y FLORES --- */
+        /* --- PANTALLA 1: FONDO Y FLORES --- */
         #screen1 {
             position: absolute;
             top: 0;
@@ -47,6 +47,7 @@
         .lycoris-left { left: 0; }
         .lycoris-right { right: 0; transform: scaleX(-1); }
 
+        /* Estilos del Sobre y Carta */
         .card-container {
             position: relative;
             width: 320px;
@@ -118,25 +119,24 @@
             font-family: 'Georgia', serif;
         }
 
-        /* FILA ÚNICA PARA BOTONES */
+        /* Contenedor horizontal para SÍ y NO */
         .buttons-container {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 20px !important;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
             width: 100%;
         }
 
         .btn {
-            padding: 10px 22px;
+            padding: 10px 24px;
             font-size: 15px;
             font-weight: bold;
             border: none;
             border-radius: 20px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-            display: inline-block;
         }
 
         .btn-yes {
@@ -153,12 +153,11 @@
         .btn-no {
             background-color: #4a4a4a;
             color: white;
-            position: relative; /* Inicia alineado al lado del SÍ */
-            transition: left 0.3s ease-out, top 0.3s ease-out;
+            transition: left 0.25s ease-out, top 0.25s ease-out;
             z-index: 999;
         }
 
-        /* ANIMACIÓN AL ABRIR */
+        /* Animación de apertura */
         .card-container.open .flap {
             transform: rotateX(180deg);
             z-index: 1;
@@ -272,7 +271,7 @@
             </g>
         </svg>
 
-        <!-- SOBRE Y CARTA -->
+        <!-- Sobre -->
         <div class="card-container" id="cardContainer" onclick="openEnvelope()">
             <div class="envelope">
                 <div class="flap"></div>
@@ -310,7 +309,7 @@
         function moveNoButton() {
             if (!isOpen) return;
 
-            // En el primer intento de tocarlo, pasa a fixed para escapar libremente
+            // Fijamos posición absoluta en pantalla al primer contacto
             if (!isMoving) {
                 const rect = btnNo.getBoundingClientRect();
                 btnNo.style.position = 'fixed';
@@ -319,16 +318,19 @@
                 isMoving = true;
             }
 
-            const padding = 20; 
-            const btnWidth = btnNo.offsetWidth;
-            const btnHeight = btnNo.offsetHeight;
+            // --- LÍMITES DEL RECUADRO AZUL CENTRAL ---
+            const boxWidth = Math.min(650, window.innerWidth * 0.7);  
+            const boxHeight = Math.min(450, window.innerHeight * 0.6); 
 
-            // Limites estrictos para no salirse de la pantalla
-            const maxX = window.innerWidth - btnWidth - padding;
-            const maxY = window.innerHeight - btnHeight - padding;
+            const minX = (window.innerWidth - boxWidth) / 2;
+            const maxX = minX + boxWidth - btnNo.offsetWidth;
 
-            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            const minY = (window.innerHeight - boxHeight) / 2;
+            const maxY = minY + boxHeight - btnNo.offsetHeight;
+
+            // Cálculo de coordenadas aleatorias dentro de la caja azul
+            const randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
+            const randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
 
             btnNo.style.left = `${randomX}px`;
             btnNo.style.top = `${randomY}px`;
